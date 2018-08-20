@@ -8,7 +8,7 @@ import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
 import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
@@ -24,14 +24,14 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure (HttpSecurity http) throws Exception {
        http
-         //.antMatcher("/h2-console/**").headers().frameOptions().disable()
-       //.and()
+        .antMatcher("/h2-console/**").headers().frameOptions().disable()
+        .and()
            .authorizeRequests()
-           .antMatchers("/prelogin", "/hello/**")
+           .mvcMatchers("/prelogin", "/hello/**", "/h2-console/**")
              .permitAll()
-           .antMatchers("/user/**")
+           .mvcMatchers("/user/**")
              .hasRole("USER")
-           .antMatchers("/admin/**")
+           .mvcMatchers("/admin/**")
              .hasRole("ADMIN")
            .anyRequest()
              .authenticated()
@@ -75,7 +75,8 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
     @Bean
     PasswordEncoder passwordEncoder() {
-        return new BCryptPasswordEncoder();
+        //return new BCryptPasswordEncoder();
+      return NoOpPasswordEncoder.getInstance();
     }
 
     AuthenticationEntryPoint authenticationEntryPoint() {

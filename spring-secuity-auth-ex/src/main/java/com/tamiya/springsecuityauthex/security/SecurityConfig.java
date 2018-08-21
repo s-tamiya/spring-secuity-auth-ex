@@ -24,10 +24,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     @Override
     protected void configure (HttpSecurity http) throws Exception {
        http
-        .antMatcher("/h2-console/**").headers().frameOptions().disable()
+        /*.antMatcher("/h2-console/**").headers().frameOptions().disable()
         .and()
+          .authorizeRequests()
+        .and()*/
            .authorizeRequests()
-           .mvcMatchers("/prelogin", "/hello/**", "/h2-console/**")
+           .mvcMatchers("/prelogin")
              .permitAll()
            .mvcMatchers("/user/**")
              .hasRole("USER")
@@ -56,9 +58,11 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
              .logoutSuccessHandler(logoutSuccessHandler())
          .and()
            .csrf()
-             //.disable();
-             //.ignoringAntMatchers("/login")
-             .csrfTokenRepository(new CookieCsrfTokenRepository())
+           //.disable();
+           //.ignoringAntMatchers("/login")
+           .csrfTokenRepository(new CookieCsrfTokenRepository())
+           //.ignoringAntMatchers("/h2-console/**")
+
        ;
 
     }

@@ -20,7 +20,6 @@ public class SimpleUserDetailService implements UserDetailsService {
 
   @Override
   public UserDetails loadUserByUsername(final String email) throws UsernameNotFoundException {
-    // TODO 自動生成されたメソッド・スタブ
     return userRepository.findByEmail(email)
               .map(SimpleLoginUser::new)
               .orElseThrow(() -> new UsernameNotFoundException("user not found"));

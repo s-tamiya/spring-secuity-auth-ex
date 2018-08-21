@@ -29,7 +29,7 @@ public class Memo {
   private Long id;
   @Column(name = "title", nullable = false, length = 255)
   private String title;
-  @Column(name = "descreption", nullable = false)
+  @Column(name = "description", nullable = false)
   private String descreption;
   @Column(name = "done", nullable = false)
   private Boolean done;

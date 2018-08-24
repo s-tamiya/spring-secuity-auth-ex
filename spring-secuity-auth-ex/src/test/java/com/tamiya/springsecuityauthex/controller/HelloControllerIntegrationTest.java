@@ -1,6 +1,5 @@
 package com.tamiya.springsecuityauthex.controller;
 
-import static org.assertj.core.api.Assertions.*;
 import static org.springframework.security.test.web.servlet.setup.SecurityMockMvcConfigurers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
@@ -14,9 +13,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.context.SpringBootTest.WebEnvironment;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
-import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.RequestBuilder;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -47,18 +46,22 @@ public class HelloControllerIntegrationTest {
             .build(); // ビルド
   }
 
+  @WithMockUser
   @Test
   public void greeting() throws Exception {
+    //User user = new User(1L, "test_user", "pass", "aaa.bbb@example.com", true);
+    //SimpleLoginUser loginUser = new SimpleLoginUser(user);
+
     RequestBuilder builder = MockMvcRequestBuilders.get("/hello")
+        //.with(user(loginUser))
+        // .with(csrf())
         .accept(contentTypeText);// contentTypeの設定
-    MvcResult result = mvc.perform(builder)
+
+    mvc.perform(builder)
         .andExpect(status().isOk())
         .andExpect(content().contentType(contentTypeText))
-        .andExpect(content().string("hello WORLD"))
-        .andDo(print())
-        .andReturn(); // andReturn()でMvcResultオブジェクトを返す
-
-    assertThat(result.getResponse().getContentAsString()).isEqualTo("HelloWORLD");
+        .andExpect(content().string("hello world"))
+        .andDo(print());
   }
 
 }

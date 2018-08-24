@@ -30,17 +30,17 @@ public class Memo {
   @Column(name = "title", nullable = false, length = 255)
   private String title;
   @Column(name = "description", nullable = false)
-  private String descreption;
+  private String description;
   @Column(name = "done", nullable = false)
   private Boolean done;
   @Column(name = "updated", nullable = false)
   private LocalDateTime updated;
 
-  public static Memo of(Long id, String title, String descreption) {
+  public static Memo of(Long id, String title, String description) {
     return Memo.builder()
               .id(id)
               .title(title)
-              .descreption(descreption)
+              .description(description)
               .done(false)
               .updated(LocalDateTime.now())
               .build();

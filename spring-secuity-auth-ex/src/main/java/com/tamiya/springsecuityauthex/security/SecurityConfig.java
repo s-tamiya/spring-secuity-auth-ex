@@ -2,11 +2,13 @@ package com.tamiya.springsecuityauthex.security;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.password.NoOpPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -14,12 +16,21 @@ import org.springframework.security.web.AuthenticationEntryPoint;
 import org.springframework.security.web.access.AccessDeniedHandler;
 import org.springframework.security.web.authentication.AuthenticationFailureHandler;
 import org.springframework.security.web.authentication.AuthenticationSuccessHandler;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.logout.HttpStatusReturningLogoutSuccessHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
-import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.web.filter.GenericFilterBean;
+
+import com.tamiya.springsecuityauthex.repository.UserRepository;
 
 @EnableWebSecurity
 public class SecurityConfig extends WebSecurityConfigurerAdapter {
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Value("${security.secret-key:security}")
+    private String secretKey = "secret";
 
     @Override
     protected void configure (HttpSecurity http) throws Exception {
@@ -52,16 +63,20 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
            .failureHandler(authenticationFailureHandler())
          .and()
            .logout()
-             .logoutUrl("/logout")
+             /*.logoutUrl("/logout")
              .invalidateHttpSession(true)
              .deleteCookies("JSESSIONID")
+             */
              .logoutSuccessHandler(logoutSuccessHandler())
          .and()
            .csrf()
-           //.disable();
+           .disable()
            //.ignoringAntMatchers("/login")
-           .csrfTokenRepository(new CookieCsrfTokenRepository())
-           //.ignoringAntMatchers("/h2-console/**")
+           //.csrfTokenRepository(new CookieCsrfTokenRepository())
+           .addFilterBefore(tokenFilter(), UsernamePasswordAuthenticationFilter.class)
+           .sessionManagement()
+             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+           ;
 
        ;
 
@@ -75,6 +90,10 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
       auth.eraseCredentials(true)
         .userDetailsService(userDetailService)
         .passwordEncoder(passwordEncoder);
+    }
+
+    GenericFilterBean tokenFilter() {
+      return new SimpleTokenFilter(userRepository, secretKey);
     }
 
     @Bean

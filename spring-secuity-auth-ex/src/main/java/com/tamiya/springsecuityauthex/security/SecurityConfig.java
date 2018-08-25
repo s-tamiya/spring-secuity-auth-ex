@@ -40,8 +40,6 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
           .authorizeRequests()
         .and()*/
            .authorizeRequests()
-           .mvcMatchers("/prelogin")
-             .permitAll()
            .mvcMatchers("/user/**")
              .hasRole("USER")
            .mvcMatchers("/admin/**")
@@ -111,7 +109,7 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
     }
 
     AuthenticationSuccessHandler authenticationSuccessHandler() {
-        return new SimpleAuthenticationSuccessHandler();
+        return new SimpleAuthenticationSuccessHandler(secretKey);
     }
 
     AuthenticationFailureHandler authenticationFailureHandler() {
